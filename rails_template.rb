@@ -8,10 +8,10 @@ def prepend_file(filename, line)
   File.write(filename, "#{line}\n" + contents)
 end
 
-run "psql -U jonan --command='set role admin; create role test_app with createdb; alter role test_app with login'"
+run "psql -U jonan --command='set role admin; create role #{@app_name} with createdb; alter role #{@app_name} with login'"
 
 ['test', 'development', 'production'].each do |environment|
-  run "createdb -U test_app test_app_#{environment}"
+  run "createdb -U #{@app_name} #{@app_name}_#{environment}"
 end
 
 gem "devise"
@@ -25,9 +25,9 @@ gem_group :development, :test do
 end
 
 run "bundle install"
-run "rails g devise:install"
-run "rails g devise User"
-run "rails g rspec:install"
+generate 'devise:install'
+generate 'devise User'
+generate 'rspec:install'
 
 prepend_file('spec/spec_helper.rb', <<capybara)
 require 'capybara/rspec'
